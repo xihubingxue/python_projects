@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <title>Create your sub task of QRP</title>
+    <script type="text/javascript">
+    $.ajaxSetup({cache:false})
+      function display_tip()
+        {
+        alert("It's creating your task. Please check your email for detail")
+        }
+
+
+    /*this method is used for getting unclosed sub tasks by parent ticket*/
+    function load_tasks()
+    {
+    var parent = $("#parent").val();
+    if (!parent){
+    alert("Please enter parent ticket!");
+    return;
+    }
+    var select = document.getElementById("task");
+             $.ajax({
+                    url:"/load",
+                    type:"GET",
+                    data:{parent:parent},
+                    success:function(arg) {
+                        var obj = jQuery.parseJSON(arg);
+                        var count =0 ;
+                       if(obj){
+                        $("#task").empty();
+                        for(var task_key in obj) {
+                            count ++;
+                            var option = document.createElement("option");
+                            option.text = obj[task_key];
+                            option.value = task_key;
+                            try{
+                                // the version is earlier than IE8
+                                select.add(option,x.options[null]);
+                            }catch (e){
+                                select.add(option,null);
+                            }
+                        }
+                        }
+                    alert('There are '+ count + ' unclosed sub tasks!' )
+                    },
+                    error:function() {
+                       console.log("load failed");
+                    }
+                });
+    }
+
+
+/*this method is used for closing sub tasks*/
+    function close_tasks()
+    {
+    var select = document.getElementById("task");
+    var parent = $("#parent").val();
+    selected_task= $("#task  option:selected").val();
+    alert(selected_task);
+             $.ajax({
+                    url:"/close",
+                    type:"GET",
+                    data:{selected_task:selected_task, parent:parent},
+                    success:function(arg) {
+                        var obj = jQuery.parseJSON(arg);
+                        $("#task").empty();
+                        if(obj){
+                        for(var task_key in obj) {
+                           if(task_key != 'closed'){
+                            var option = document.createElement("option");
+                            option.text = obj[task_key];
+                            option.value = task_key;
+                            try{
+                                // the version is earlier than IE8
+                                select.add(option,x.options[null]);
+                            }catch (e){
+                                select.add(option,null);
+                            }
+                        }
+                        }
+                        alert('Have closed these sub tasks ' + obj['closed'])
+                        }
+                    },
+                    error:function() {
+                       console.log("load failed");
+                    }
+                });
+    }
+   </script>
+  </head>
+  <body>
+    <h2 align="left">Create your sub task of QRP</h2>
+    <form method="post" action="/task">
+      <!--<p>Email Title:<br><input type="text" name="emailTitle"></p>
+      <p>Parent Ticket:<br><input type="text" name="parent"><input type="button" onclick="get_tasks()", value="sub tasks"></p>
+      <p>Close your all sub tasks?</p>
+      <p><label><input name="close" type="radio" value="1" />Yes</label></p>
+      <p><label><input name="close" type="radio" value="0" />NO</label></p>
+      <p>Select your sub tasks to close</p>
+      <p><select></select></p>
+      <input type="submit" onclick="display_tip()" value="create sub task">
+      <br/>
+      <br/>-->
+      <table border="0" align="left" cellpadding="20">
+       <tr>
+        <td width="126" align="left">Email Title：</td><td><input type="text" name="emailTitle"></td>
+       <tr/>
+        <tr>
+        <td width="126" align="left">Parent Ticket：</td><td><input type="text" id="parent" name="parent"></td>
+       <tr/>
+        <tr>
+        <td width="126" align="left">Sub Tasks:</td>
+        <td  align="left">
+            <select name="task" id="task" style="width:150px;" multiple="multiple">
+              <option selected value="">please select</option>
+            </select>
+        </td>
+        <td><p><input type="button" value="Query" onclick="load_tasks()"></p><p><input type="button" value="Close" onclick="close_tasks()"></p></td>
+      </tr>
+        <tr>
+        <td width="126" align="left">Email Address：</td><td><input type="text" name="emailAddress"></td>
+       <tr/>
+
+        <tr>
+        <td width="126" align="left"><input type="submit" onclick="display_tip()" value="create sub task"></td>
+       <tr/>
+      </table>
+    </form>
+  </body>
+</html>

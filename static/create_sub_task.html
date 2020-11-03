@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://lib.sinaapp.com/js/jquery/2.0.2/jquery-2.0.2.min.js"></script>
+    <p id="users" hidden>{{users}}</p>
+    <p id="mails" hidden>{{mails}}</p>
+    <p id="path" hidden>{{path}}</p>
+    <link id="main" rel="stylesheet" type="text/css" href="{{ static_url('main.css') }}" />
+    <script type="text/javascript" src="{{ static_url('t_select.js') }}"></script>
+    <title>Create your sub task of QRP</title>
+
+<!--    <script>-->
+<!--      (function ($) {-->
+<!--        $.fn.fSelect = function (options) {-->
+<!--          if (typeof options == "string") {-->
+<!--            var settings = options;-->
+<!--          } else {-->
+<!--            //default settings-->
+<!--            var settings = $.extend(-->
+<!--              {-->
+<!--                placeholder: " ===Please Select=== ", //default item-->
+<!--                numDisplayed: 2, //It will display "Selected {n} items" if the amount is greater than 2-->
+<!--                overflowText: "Selected {n} items", //display this if if the amount is greater than 2-->
+<!--                searchText: "Search", //search  text-->
+<!--                showSearch: true, //display search text or not-->
+<!--              },-->
+<!--              options-->
+<!--            );-->
+<!--          }-->
+
+<!--          /**-->
+<!--           * Constructor-->
+<!--           */-->
+<!--          function fSelect(select, settings) {-->
+<!--            this.$select = $(select);-->
+<!--            this.settings = settings;-->
+<!--            this.create();-->
+<!--          }-->
+
+<!--          /**-->
+<!--           * Prototype class-->
+<!--           */-->
+<!--          fSelect.prototype = {-->
+<!--            create: function () {-->
+<!--              var multiple = this.$select.is("[multiple]") ? " multiple" : "";-->
+<!--              this.$select.wrap('<div class="fs-wrap' + multiple + '"></div>');-->
+<!--              this.$select.before(-->
+<!--                '<div class="fs-label-wrap"><div class="fs-label">' +-->
+<!--                  this.settings.placeholder +-->
+<!--                  '</div><span class="fs-arrow"></span></div>'-->
+<!--              );-->
+<!--              this.$select.before(-->
+<!--                '<div class="fs-dropdown hidden"><div class="fs-options"></div></div>'-->
+<!--              );-->
+<!--              // this.$select.addClass('hidden');-->
+<!--              this.$select.addClass("visibility-hidden");-->
+<!--              this.$wrap = this.$select.closest(".fs-wrap");-->
+<!--              //添加全选和清空按钮-->
+<!--              var BtnFixed =-->
+<!--                '<div class="btnFixed"><button class="buttonDefault" id="selectAllBtn" type="button">All</button><button class="buttonDefault" id="clearAllBtn" type="button">Clear</button></div>';-->
+<!--              this.$wrap.find(".fs-dropdown").append(BtnFixed);-->
+<!--              this.reload();-->
+<!--            },-->
+
+<!--            reload: function () {-->
+<!--              //如果设置显示搜索框，执行下面方法-->
+<!--              if (this.settings.showSearch) {-->
+<!--                var search =-->
+<!--                  '<div class="fs-search"><input type="search" placeholder="' +-->
+<!--                  this.settings.searchText +-->
+<!--                  '" /></div>';-->
+<!--                this.$wrap.find(".fs-dropdown").prepend(search);-->
+<!--              }-->
+<!--              var choices = this.buildOptions(this.$select);-->
+<!--              //获取到所有option选项-->
+<!--              this.$wrap.find(".fs-options").append(choices);-->
+
+<!--              //选中当前已选的值-->
+<!--              var valArr = this.$select.val();-->
+<!--              // if(valArr.length){-->
+<!--              if (valArr) {-->
+<!--                var $fsOption = this.$wrap.find(".fs-option");-->
+<!--                valArr.forEach(function (currentValue) {-->
+<!--                  $fsOption.each(function () {-->
+<!--                    if (currentValue == $(this).attr("data-value")) {-->
+<!--                      $(this).addClass("selected");-->
+<!--                    }-->
+<!--                  });-->
+<!--                });-->
+<!--              }-->
+<!--              //获取到选中状态的选项-->
+<!--              this.reloadDropdownLabel();-->
+<!--            },-->
+
+<!--            destroy: function () {-->
+<!--              this.$wrap.find(".fs-label-wrap").remove();-->
+<!--              this.$wrap.find(".fs-dropdown").remove();-->
+<!--              // this.$select.unwrap().removeClass('hidden');-->
+<!--              this.$select.unwrap().removeClass("visibility-hidden");-->
+<!--            },-->
+<!--            //获取select的option选项，并赋值到插件自定义的每一选项div里-->
+<!--            buildOptions: function ($element) {-->
+<!--              var $this = this;-->
+
+<!--              var choices = "";-->
+<!--              $element.children().each(function (i, el) {-->
+<!--                var $el = $(el);-->
+<!--                //支持 optiongroup-->
+<!--                if ("optgroup" == $el.prop("nodeName").toLowerCase()) {-->
+<!--                  choices += '<div class="fs-optgroup">';-->
+<!--                  choices +=-->
+<!--                    '<div class="fs-optgroup-label">' +-->
+<!--                    $el.prop("label") +-->
+<!--                    "</div>";-->
+<!--                  choices += $this.buildOptions($el);-->
+<!--                  choices += "</div>";-->
+<!--                } else {-->
+<!--                  var selected = $el.is("[selected]") ? " selected" : "";-->
+<!--                  choices +=-->
+<!--                    '<div class="fs-option' +-->
+<!--                    selected +-->
+<!--                    '" data-value="' +-->
+<!--                    $el.prop("value") +-->
+<!--                    '"><span class="fs-checkbox"><i></i></span><div class="fs-option-label">' +-->
+<!--                    $el.html() +-->
+<!--                    "</div></div>";-->
+<!--                }-->
+<!--              });-->
+
+<!--              return choices;-->
+<!--            },-->
+<!--            //每次加载时判断一下插件自定义的每一选项div哪些是选中状态，将选中状态对应的文字，push到一个数组labelText里，页面上显示出来的文字就是数组中获取到的文字-->
+<!--            reloadDropdownLabel: function () {-->
+<!--              var settings = this.settings;-->
+<!--              var labelText = [];-->
+
+<!--              this.$wrap.find(".fs-option.selected").each(function (i, el) {-->
+<!--                labelText.push($(el).find(".fs-option-label").text());-->
+<!--              });-->
+
+<!--              if (labelText.length < 1) {-->
+<!--                labelText = settings.placeholder;-->
+<!--              } else if (labelText.length > settings.numDisplayed) {-->
+<!--                labelText = settings.overflowText.replace(-->
+<!--                  "{n}",-->
+<!--                  labelText.length-->
+<!--                );-->
+<!--              } else {-->
+<!--                labelText = labelText.join(", ");-->
+<!--              }-->
+
+<!--              this.$wrap.find(".fs-label").html(labelText);-->
+<!--              this.$wrap.find(".fs-label").attr("title", labelText);-->
+<!--              this.$select.change();-->
+<!--            },-->
+<!--          };-->
+
+<!--          /**-->
+<!--           * Loop through each matching element-->
+<!--           */-->
+<!--          return this.each(function () {-->
+<!--            var data = $(this).data("fSelect");-->
+<!--            if (!data) {-->
+<!--              data = new fSelect(this, settings);-->
+<!--              $(this).data("fSelect", data);-->
+<!--            }-->
+
+<!--            if (typeof settings == "string") {-->
+<!--              data[settings]();-->
+<!--            }-->
+<!--          });-->
+<!--        };-->
+<!--        /**-->
+<!--         * Events-->
+<!--         */-->
+<!--        window.fSelect = {-->
+<!--          active: null,-->
+<!--          idx: -1,-->
+<!--        };-->
+
+<!--        function setIndexes($wrap) {-->
+<!--          $wrap.find(".fs-option:not(.hidden)").each(function (i, el) {-->
+<!--            $(el).attr("data-index", i);-->
+<!--            $wrap.find(".fs-option").removeClass("hl");-->
+<!--          });-->
+<!--          $wrap.find(".fs-search input").focus();-->
+<!--          window.fSelect.idx = -1;-->
+<!--        }-->
+
+<!--        function setScroll($wrap) {-->
+<!--          var $container = $wrap.find(".fs-options");-->
+<!--          var $selected = $wrap.find(".fs-option.hl");-->
+
+<!--          var itemMin = $selected.offset().top + $container.scrollTop();-->
+<!--          var itemMax = itemMin + $selected.outerHeight();-->
+<!--          var containerMin = $container.offset().top + $container.scrollTop();-->
+<!--          var containerMax = containerMin + $container.outerHeight();-->
+
+<!--          if (itemMax > containerMax) {-->
+<!--            // scroll down-->
+<!--            var to = $container.scrollTop() + itemMax - containerMax;-->
+<!--            $container.scrollTop(to);-->
+<!--          } else if (itemMin < containerMin) {-->
+<!--            // scroll up-->
+<!--            var to = $container.scrollTop() - containerMin - itemMin;-->
+<!--            $container.scrollTop(to);-->
+<!--          }-->
+<!--        }-->
+<!--        //插件选项的点击事件-->
+<!--        $(document).on("click", ".fs-option", function () {-->
+<!--          var $wrap = $(this).closest(".fs-wrap");-->
+
+<!--          if ($wrap.hasClass("multiple")) {-->
+<!--            var selected = [];-->
+
+<!--            $(this).toggleClass("selected");-->
+<!--            $wrap.find(".fs-option.selected").each(function (i, el) {-->
+<!--              selected.push($(el).attr("data-value"));-->
+<!--            });-->
+<!--          } else {-->
+<!--            var selected = $(this).attr("data-value");-->
+<!--            $wrap.find(".fs-option").removeClass("selected");-->
+<!--            $(this).addClass("selected");-->
+<!--            $wrap.find(".fs-dropdown").hide();-->
+<!--          }-->
+<!--          $wrap.find("select").val(selected);-->
+<!--          $wrap.find("select").fSelect("reloadDropdownLabel");-->
+<!--        });-->
+
+<!--        $(document).on("keyup", ".fs-search input", function (e) {-->
+<!--          if (40 == e.which) {-->
+<!--            $(this).blur();-->
+<!--            return;-->
+<!--          }-->
+
+<!--          var $wrap = $(this).closest(".fs-wrap");-->
+<!--          var keywords = $(this).val();-->
+
+<!--          $wrap.find(".fs-option, .fs-optgroup-label").removeClass("hidden");-->
+
+<!--          if ("" != keywords) {-->
+<!--            $wrap.find(".fs-option").each(function () {-->
+<!--              var regex = new RegExp(keywords, "gi");-->
+<!--              if (-->
+<!--                null === $(this).find(".fs-option-label").text().match(regex)-->
+<!--              ) {-->
+<!--                $(this).addClass("hidden");-->
+<!--              }-->
+<!--            });-->
+
+<!--            $wrap.find(".fs-optgroup-label").each(function () {-->
+<!--              var num_visible = $(this)-->
+<!--                .closest(".fs-optgroup")-->
+<!--                .find(".fs-option:not(.hidden)").length;-->
+<!--              if (num_visible < 1) {-->
+<!--                $(this).addClass("hidden");-->
+<!--              }-->
+<!--            });-->
+<!--          }-->
+
+<!--          setIndexes($wrap);-->
+<!--        });-->
+<!--        //显示隐藏下拉选项-->
+<!--        $(document).on("click", function (e) {-->
+<!--          var $el = $(e.target);-->
+<!--          var $wrap = $el.closest(".fs-wrap");-->
+
+<!--          if (0 < $wrap.length) {-->
+<!--            if ($el.hasClass("fs-label")) {-->
+<!--              window.fSelect.active = $wrap;-->
+<!--              var is_hidden = $wrap.find(".fs-dropdown").hasClass("hidden");-->
+<!--              $(".fs-dropdown").addClass("hidden");-->
+
+<!--              if (is_hidden) {-->
+<!--                $wrap.find(".fs-dropdown").removeClass("hidden");-->
+<!--              } else {-->
+<!--                $wrap.find(".fs-dropdown").addClass("hidden");-->
+<!--              }-->
+
+<!--              setIndexes($wrap);-->
+<!--            }-->
+<!--          } else {-->
+<!--            $(".fs-dropdown").addClass("hidden");-->
+<!--            window.fSelect.active = null;-->
+<!--          }-->
+<!--        });-->
+
+<!--        $(document).on("keydown", function (e) {-->
+<!--          var $wrap = window.fSelect.active;-->
+
+<!--          if (null === $wrap) {-->
+<!--            return;-->
+<!--          } else if (38 == e.which) {-->
+<!--            // up-->
+<!--            e.preventDefault();-->
+
+<!--            $wrap.find(".fs-option").removeClass("hl");-->
+
+<!--            if (window.fSelect.idx > 0) {-->
+<!--              window.fSelect.idx&#45;&#45;;-->
+<!--              $wrap-->
+<!--                .find(".fs-option[data-index=" + window.fSelect.idx + "]")-->
+<!--                .addClass("hl");-->
+<!--              setScroll($wrap);-->
+<!--            } else {-->
+<!--              window.fSelect.idx = -1;-->
+<!--              $wrap.find(".fs-search input").focus();-->
+<!--            }-->
+<!--          } else if (40 == e.which) {-->
+<!--            // down-->
+<!--            e.preventDefault();-->
+
+<!--            var last_index = $wrap.find(".fs-option:last").attr("data-index");-->
+<!--            if (window.fSelect.idx < parseInt(last_index)) {-->
+<!--              window.fSelect.idx++;-->
+<!--              $wrap.find(".fs-option").removeClass("hl");-->
+<!--              $wrap-->
+<!--                .find(".fs-option[data-index=" + window.fSelect.idx + "]")-->
+<!--                .addClass("hl");-->
+<!--              setScroll($wrap);-->
+<!--            }-->
+<!--          } else if (32 == e.which || 13 == e.which) {-->
+<!--            // space, enter-->
+<!--            $wrap.find(".fs-option.hl").click();-->
+<!--          } else if (27 == e.which) {-->
+<!--            // esc-->
+<!--            $(".fs-dropdown").addClass("hidden");-->
+<!--            window.fSelect.active = null;-->
+<!--          }-->
+<!--        });-->
+
+<!--        //=========================全选=====================================-->
+<!--        $(document).on("click", "#selectAllBtn", function () {-->
+<!--          var $wrap = $(this).closest(".fs-wrap");-->
+
+<!--          if ($wrap.hasClass("multiple")) {-->
+<!--            var selected = [];-->
+
+<!--            $wrap.find(".fs-option").addClass("selected");-->
+<!--            $wrap.find(".fs-option.selected").each(function (i, el) {-->
+<!--              selected.push($(el).attr("data-value"));-->
+<!--            });-->
+<!--          }-->
+<!--          $wrap.find("select").val(selected);-->
+<!--          $wrap.find("select").fSelect("reloadDropdownLabel");-->
+<!--        });-->
+<!--        //=========================全不选/清空=====================================-->
+<!--        $(document).on("click", "#clearAllBtn", function () {-->
+<!--          var $wrap = $(this).closest(".fs-wrap");-->
+
+<!--          if ($wrap.hasClass("multiple")) {-->
+<!--            var selected = [];-->
+
+<!--            $wrap.find(".fs-option").removeClass("selected");-->
+<!--            $wrap.find(".fs-option.selected").each(function (i, el) {-->
+<!--              selected.push($(el).attr("data-value"));-->
+<!--            });-->
+<!--          }-->
+<!--          $wrap.find("select").val(selected);-->
+<!--          $wrap.find("select").fSelect("reloadDropdownLabel");-->
+<!--        });-->
+<!--      })(jQuery);-->
+<!--    </script>-->
+    <script type="text/javascript">
+    //show or hide help
+      function show_hiden_help(){
+      var note = $("#note");
+      var flag = note.css('display');
+       if (flag == 'none'){
+              note.show();
+       }
+       if (flag != 'none'){
+              note.hide();
+       }
+}
+
+    </script>
+    <script type="text/javascript">
+      $.ajaxSetup({ cache: false });
+
+      $(function () {
+        //initial the select element of sub tasks
+        select = $("#task");
+        select.fSelect();
+
+      });
+
+       function load_users()
+       {
+        //load users
+        var select_users = document.getElementById("userName");
+        var obj = jQuery.parseJSON($("#users").text());
+         $("#userName").empty();
+           for (var i=0; i<obj.length; i++)
+           {
+
+                var option = document.createElement("option");
+                option.text = obj[i]["username"];
+                option.value = obj[i]["empno"];
+                try {
+                  // the version is earlier than IE8
+                  select_users.add(option, x.options[null]);
+                } catch (e) {
+                  select_users.add(option, null);
+                }
+           }
+        }
+
+       function load_mails()
+       {
+        //load release mails
+        var select_mails = document.getElementById("emailTitle");
+        var obj = jQuery.parseJSON($("#mails").text());
+         $("#emailTitle").empty();
+           for (var i=0; i<obj.length; i++)
+           {
+
+                var option = document.createElement("option");
+                option.text = obj[i];
+                option.value = obj[i];
+                try {
+                  // the version is earlier than IE8
+                  select_mails.add(option, x.options[null]);
+                } catch (e) {
+                  select_mails.add(option, null);
+                }
+           }
+        }
+
+      function create_task() {
+        var emailTitle = $("#emailTitle  option:selected").val();
+        var parent = $("#parent").val();
+        var userName = $("#userName  option:selected").val();
+        if (!emailTitle) {
+          alert("Please enter email title!");
+          return;
+        }
+        if (!parent) {
+          alert("Please enter your parent ticket!");
+          return;
+        }
+        if (!userName) {
+          alert("Please enter your Employee number!");
+          return;
+        }
+        alert("It's creating your task. Please wait for a while.");
+        $.ajax({
+          url: "/task",
+          type: "GET",
+          data: { parent: parent, emailTitle: emailTitle, userName: userName },
+          success: function (arg) {
+            var obj = jQuery.parseJSON(arg);
+            if (obj) {
+              alert("Have created your sub task successfully");
+              $("#sub_link").attr('href', obj["link"]);
+              $("#sub_task").show();
+            } else {
+              alert("Fail to create your sub task");
+            }
+          },
+          error: function () {
+            console.log("Fail to create your sub task");
+          },
+        });
+      }
+
+      /*this method is used for getting unclosed sub tasks by parent ticket*/
+      function load_tasks() {
+        var parent = $("#parent_c").val();
+        if (!parent) {
+          alert("Please enter parent ticket!");
+          return;
+        }
+        var select = document.getElementById("task");
+        $.ajax({
+          url: "/load",
+          type: "GET",
+          data: { parent: parent },
+          success: function (arg) {
+            var obj = jQuery.parseJSON(arg);
+            var count = 0;
+            if (obj) {
+              $("#task").empty();
+              for (var task_key in obj) {
+                count++;
+                var option = document.createElement("option");
+                option.text = obj[task_key];
+                option.value = task_key;
+                try {
+                  // the version is earlier than IE8
+                  select.add(option, x.options[null]);
+                } catch (e) {
+                  select.add(option, null);
+                }
+              }
+            }
+            alert("There are " + count + " unclosed sub tasks!");
+            if (count > 0) {
+              $(function () {
+                select = $("#task");
+                var wrap = select.closest(".fs-wrap");
+                wrap.find(".fs-label-wrap").remove();
+                wrap.find(".fs-dropdown").remove();
+                select.unwrap().removeClass("visibility-hidden");
+                select.data("fSelect", null);
+                select.fSelect();
+              });
+            }
+          },
+          error: function () {
+            console.log("load failed");
+          },
+        });
+      }
+
+      /*this method is used for closing sub tasks*/
+      function close_tasks() {
+        var select = document.getElementById("task");
+        var parent = $("#parent_c").val();
+        var wrap = $("#task").closest(".fs-wrap");
+        var selected_task = [];
+        wrap.find(".fs-option.selected").each(function (i, el) {
+          selected_task.push($(el).attr("data-value"));
+        });
+        if (selected_task.length == 0) {
+          alert("Please select your sub tasks!");
+          return;
+        }
+        $.ajax({
+          url: "/close",
+          type: "GET",
+          /*data:{selected_task:selected_task, parent:parent},*/
+          data: "selected_task=" + selected_task + "&parent=" + parent,
+          success: function (arg) {
+            var obj = jQuery.parseJSON(arg);
+            $("#task").empty();
+            if (obj) {
+              for (var task_key in obj) {
+                if (task_key != "closed") {
+                  var option = document.createElement("option");
+                  option.text = obj[task_key];
+                  option.value = task_key;
+                  try {
+                    // the version is earlier than IE8
+                    select.add(option, x.options[null]);
+                  } catch (e) {
+                    select.add(option, null);
+                  }
+                }
+              }
+              alert("Have closed these sub tasks " + obj["closed"]);
+              $(function () {
+                select = $("#task");
+                var wrap = select.closest(".fs-wrap");
+                wrap.find(".fs-label-wrap").remove();
+                wrap.find(".fs-dropdown").remove();
+                select.unwrap().removeClass("visibility-hidden");
+                select.data("fSelect", null);
+                select.fSelect();
+              });
+            }
+          },
+          error: function () {
+            console.log("load failed");
+          },
+        });
+      }
+    </script>
+  </head>
+  <body onload="load_users(); load_mails()">
+    <h2 align="left">Create your sub task of QRP</h2>
+   <div><a href="#" onclick="show_hiden_help()">Click here to show or hide help</a></div>
+   <div id="note" hidden>
+    <div>1.Release: lists  the titles of all release emails during the past 7 days. is used for retrieving the specific release email.</div>
+    <div>2.Parent ticket: The number of your QRP ticket</div>
+    <div>3.User Name: The tester who is going to create the sub task</div>
+    <div>4.Click the button "create sub task", you will create a sub task for the parent ticket.</div>
+    <div>5.Sub Tasks:The unclosed sub tasks for the parent ticket</div>
+    <div>6.Click button "Query", the unclosed sub tasks of QRP will be searched out</div>
+    <div>7.Click button "Close", your will close the sub tasks selected</div>
+   </div>
+    <form method="post" action="/task">
+      <!--<p>Email Title:<br><input type="text" name="emailTitle"></p>
+      <p>Parent Ticket:<br><input type="text" name="parent"><input type="button" onclick="get_tasks()", value="sub tasks"></p>
+      <p>Close your all sub tasks?</p>
+      <p><label><input name="close" type="radio" value="1" />Yes</label></p>
+      <p><label><input name="close" type="radio" value="0" />NO</label></p>
+      <p>Select your sub tasks to close</p>
+      <p><select></select></p>
+      <input type="submit" onclick="display_tip()" value="create sub task">
+      <br/>
+      <br/>-->
+      <table border="0" align="left" cellpadding="20">
+        <tr>
+          <td width="126" align="left">
+            <span style="color:red;">*</span>Release:
+          </td>
+          <td>
+           <select name="emailTitle" id="emailTitle" style="width: 150px">
+               <option selected value=""></option>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126" align="left">
+            <span style="color:red;">*</span>Parent Ticket:
+          </td>
+          <td><input type="text" id="parent" name="parent" /></td>
+        </tr>
+
+        <tr>
+          <td width="126" align="left">
+            <span style="color:red;">*</span>User Name:
+          </td>
+          <td>
+            <select name="userName" id="userName" style="width: 150px">
+               <option selected value=""></option>
+            </select>
+          </td>
+        </tr>
+
+        <tr>
+          <td width="126" align="left">
+            <input
+              type="button"
+              onclick="create_task()"
+              value="create sub task"
+            />
+          <td id="sub_task" hidden>For the sub task just created,<a id="sub_link" href="">please click here.</a></td>
+          </td>
+        </tr>
+
+        <tr>
+          <td  style="padding: 12px 0; width:300px" align="left">
+            <h2>Close your sub tasks of QRP</h2>
+          </td>
+        </tr>
+        <tr>
+          <td width="126" align="left">
+            <span style="color:red;">*</span>Parent Ticket:
+          </td>
+          <td><input type="text" id="parent_c" name="parent_c" /></td>
+        </tr>
+        <tr>
+          <td  align="left">
+            <span style="color:red;">*</span>Sub Tasks:
+          </td>
+          <td align="left">
+            <select
+              name="task"
+              id="task"
+              style="width: 150px"
+              multiple="multiple"
+            >
+            </select>
+          </td>
+          <td>
+            <input type="button" value="Query" onclick="load_tasks()" />
+            <input type="button" value="Close" onclick="close_tasks()" />
+          </td>
+        </tr>
+      </table>
+    </form>
+  </body>
+</html>
